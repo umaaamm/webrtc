@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, 
+    initial-scale=1.0">
+    <style>
+        html,
+        body {
+            height: 100%;
+            margin: 0;
+        }
+
+        div {
+            position: relative;
+            min-height: 100%;
+            min-width: 100%;
+            overflow: hidden;
+            object-fit: cover;
+        }
+
+        video {
+            width: 480px;
+            height: 640px;
+            background-color: black;
+        }
+        p{
+            margin: 10px;
+        }
+    </style>
+    <title>GetUserMedia demo</title>
+</head>
+
+<body>
+    <div><video id="video"></video>
+        <p id="check-video"></p>
+        <p id="check-attribute"></p>
+        <p id="stream-info-enable"></p>
+        <p id="stream-info-id"></p>
+        <p id="stream-info-label"></p>
+        <p id="initialised-camera"></p>
+    </div>
+    <script>
+        function isMobile() {
+            const isAndroid = /Android/i.test(navigator.userAgent);
+            const isiOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
+            return isAndroid || isiOS;
+        }
+
+        async function setupCamera() {
+            const isPortrait = true; // do logic here
+
+            let video = document.getElementById('video');
+            if (video) {
+                document.getElementById('check-video').innerText = 'Getting video';
+            }
+
+            video.setAttribute('autoplay', '');
+            video.setAttribute('muted', '');
+            video.setAttribute('playsinline', '');
+
+            if (video.attributes[3]){
+                document.getElementById('check-attribute').innerText = 'Check Attribute';
+            }
+
+            console.log("Calling getUserMedia");
+
+            return new Promise((resolve) => {
+                (async () => {
+                    await navigator.mediaDevices.getUserMedia({
+                            'audio': false,
+                            'video': {
+                                facingMode: 'user',
+                                width: isPortrait ? 480 : 640,
+                                height: isPortrait ? 640 : 480,
+                            },
+                        })
+                        .then((stream) => {
+                            let test = stream.getTracks()
+                            document.getElementById('stream-info-enable').innerText = `Stream Enable: ${test[0].enabled}`
+                            document.getElementById('stream-info-id').innerText = `Stream Id: ${test[0].id}`
+                            document.getElementById('stream-info-label').innerText = `Steam Label: ${test[0].label}`
+                            video.srcObject = stream;
+                            video.play();
+                            resolve(true);
+                        })
+                        .catch((err) => {
+                            console.log("Encountered getUserMedia error", err);
+                            resolve(false);
+                        });
+                })();
+            });
+
+        }
+
+        (async () => {
+            const ret = await setupCamera();
+            console.log(`Initialised camera: ${ret}`)
+            document.getElementById('initialised-camera').innerText = `Initialised camera: ${ret}`
+        })();
+    </script>
+</body>
+
+</html>
