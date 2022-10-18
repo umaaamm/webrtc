@@ -37,6 +37,7 @@
         <p id="check-video"></p>
         <p id="check-attribute"></p>
         <p>Calling getUserMedia</p>
+        <p id="stream-ego"></p>
         <p id="stream-info-enable"></p>
         <p id="stream-info-id"></p>
         <p id="stream-info-label"></p>
@@ -78,6 +79,7 @@
                             },
                         })
                         .then((stream) => {
+                        document.getElementById('stream-ego').innerText = `arif bego`
                             let test = stream.getTracks()
                             document.getElementById('stream-info-enable').innerText = `Stream Enable: ${test[0].enabled}`
                             document.getElementById('stream-info-id').innerText = `Stream Id: ${test[0].id}`
