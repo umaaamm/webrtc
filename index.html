@@ -70,41 +70,72 @@
 
             console.log("Calling getUserMedia");
 
-            return new Promise((resolve) => {
-                (async () => {
-                    await navigator.mediaDevices.getUserMedia({
-                            'audio': false,
-                            'video': {
-                                facingMode: 'user',
-                                width: isPortrait ? 480 : 640,
-                                height: isPortrait ? 640 : 480,
-                            },
-                        })
-                        .then((mediaStream) => {
-                            document.getElementById('stream-ego').innerText = `arif bego`
-                            // let testing = stream.enu
-                            let test = mediaStream.getTracks()
-                            document.getElementById('stream-info-enable').innerText =
-                                `Stream Enable: ${test[0].enabled}`
-                            document.getElementById('stream-info-id').innerText =
-                                `Stream Id: ${test[0].id}`
-                            document.getElementById('stream-info-label').innerText =
-                                `Steam Label: ${test[0].label}`
+            // disini
+            if (!navigator.mediaDevices && !navigator.mediaDevices.getUserMedia) {
+                navigator.userMedia = navigator.mozGetUserMedia || navigator.getUserMedia
+                if (!navigator.userMedia) {
+                    alert("Please Update or Use Different Browser");
+                    return
+                }
+                navigator.userMedia({
+                    video: true
+                }, (stream) => showCam(stream), (err) => showErr(err))
+                return
+            }
 
-                            const videos = document.querySelector('video');
+            navigator.mediaDevices.getUserMedia({
+                    video: true
+                })
+                .then((stream) => showCam(stream))
+                .catch((err) => showErr(err))
 
-                            videos.srcObject = mediaStream;
-                            videos.onloadedmetadata = () => {
-                                videos.play();
-                            };
-                            resolve(true);
-                        })
-                        .catch((err) => {
-                            console.log("Encountered getUserMedia error", err);
-                            resolve(false);
-                        });
-                })();
-            });
+            function showCam(stream) {
+                let video = document.querySelector("video");
+                video.srcObject = stream;
+            }
+
+            function showErr(err) {
+                let message = err.name === "NotFoundError" ? "Please Attach Camera" :
+                    err.name === "NotAllowedError" ? "Please Grant Permission to Access Camera" : err
+                alert(message)
+            }
+
+            // disini
+            // return new Promise((resolve) => {
+            //     (async () => {
+            //         await navigator.mediaDevices.getUserMedia({
+            //                 'audio': false,
+            //                 'video': {
+            //                     facingMode: 'user',
+            //                     width: isPortrait ? 480 : 640,
+            //                     height: isPortrait ? 640 : 480,
+            //                 },
+            //             })
+            //             .then((mediaStream) => {
+            //                 document.getElementById('stream-ego').innerText = `arif bego`
+            //                 // let testing = stream.enu
+            //                 let test = mediaStream.getTracks()
+            //                 document.getElementById('stream-info-enable').innerText =
+            //                     `Stream Enable: ${test[0].enabled}`
+            //                 document.getElementById('stream-info-id').innerText =
+            //                     `Stream Id: ${test[0].id}`
+            //                 document.getElementById('stream-info-label').innerText =
+            //                     `Steam Label: ${test[0].label}`
+
+            //                 const videos = document.querySelector('video');
+
+            //                 videos.srcObject = mediaStream;
+            //                 videos.onloadedmetadata = () => {
+            //                     videos.play();
+            //                 };
+            //                 resolve(true);
+            //             })
+            //             .catch((err) => {
+            //                 console.log("Encountered getUserMedia error", err);
+            //                 resolve(false);
+            //             });
+            //     })();
+            // });
 
         }
 
