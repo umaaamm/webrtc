@@ -25,7 +25,8 @@
             height: 640px;
             background-color: black;
         }
-        p{
+
+        p {
             margin: 10px;
         }
     </style>
@@ -33,10 +34,11 @@
 </head>
 
 <body>
-    <div><video id="video"></video>
+    <div>
+        <video id="video"></video>
         <p id="check-video"></p>
         <p id="check-attribute"></p>
-        <p>Calling getUserMedia</p>
+        <p id="check-function"></p>
         <p id="stream-ego"></p>
         <p id="stream-info-enable"></p>
         <p id="stream-info-id"></p>
@@ -62,7 +64,7 @@
             video.setAttribute('muted', '');
             video.setAttribute('playsinline', '');
 
-            if (video.attributes[3]){
+            if (video.attributes[3]) {
                 document.getElementById('check-attribute').innerText = 'Check Attribute';
             }
 
@@ -78,14 +80,23 @@
                                 height: isPortrait ? 640 : 480,
                             },
                         })
-                        .then((stream) => {
-                        document.getElementById('stream-ego').innerText = `arif bego`
-                            let test = stream.getTracks()
-                            document.getElementById('stream-info-enable').innerText = `Stream Enable: ${test[0].enabled}`
-                            document.getElementById('stream-info-id').innerText = `Stream Id: ${test[0].id}`
-                            document.getElementById('stream-info-label').innerText = `Steam Label: ${test[0].label}`
-                            video.srcObject = stream;
-                            video.play();
+                        .then((mediaStream) => {
+                            document.getElementById('stream-ego').innerText = `arif bego`
+                            // let testing = stream.enu
+                            let test = mediaStream.getTracks()
+                            document.getElementById('stream-info-enable').innerText =
+                                `Stream Enable: ${test[0].enabled}`
+                            document.getElementById('stream-info-id').innerText =
+                                `Stream Id: ${test[0].id}`
+                            document.getElementById('stream-info-label').innerText =
+                                `Steam Label: ${test[0].label}`
+
+                            const videos = document.querySelector('video');
+
+                            videos.srcObject = mediaStream;
+                            videos.onloadedmetadata = () => {
+                                videos.play();
+                            };
                             resolve(true);
                         })
                         .catch((err) => {
@@ -98,10 +109,36 @@
         }
 
         (async () => {
+            document.getElementById('check-function').innerText = "Check Function"
             const ret = await setupCamera();
             console.log(`Initialised camera: ${ret}`)
             document.getElementById('initialised-camera').innerText = `Initialised camera: ${ret}`
         })();
+
+        // if (!navigator.mediaDevices?.enumerateDevices) {
+        //     console.log("enumerateDevices() not supported.");
+        // } else {
+        //     // List cameras and microphones.
+        //     navigator.mediaDevices.enumerateDevices()
+        //         .then((devices) => {
+        //             devices.forEach((device) => {
+        //                 console.log(device, 'device ya ini')
+        //                 console.log(
+        //                     `kind = ${device.kind}, label = ${device.label} id = ${device.deviceId}`);
+        //             });
+        //         })
+        //         .catch((err) => {
+        //             console.error(`${err.name}: ${err.message}`);
+        //         });
+        // }
+
+        // const constraintList = document.querySelector("#video");
+        // const supportedConstraints = navigator.mediaDevices.getSupportedConstraints();
+        // for (const constraint of Object.keys(supportedConstraints)) {
+        //     const elem = document.createElement("li");
+        //     elem.innerHTML = `<code>${constraint}</code>`;
+        //     constraintList.appendChild(elem);
+        // }
     </script>
 </body>
 
